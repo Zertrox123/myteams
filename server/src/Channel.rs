@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::{ChatEntry::ChatEntry, utils};
 
 #[derive(Debug, Clone)]
@@ -5,7 +7,7 @@ pub struct Channel {
     pub id: String,
     pub name: String,
     pub description: String,
-    pub messages: Vec<ChatEntry>
+    pub threads: Vec<HashMap<String, Vec<ChatEntry>>>
 }
 
 impl Channel {
@@ -14,12 +16,13 @@ impl Channel {
             id: utils::generate_uuid(),
             name: String::new(),
             description: String::new(),
-            messages:Vec::new(),
+            threads:Vec::new(),
         }
     }
 
-    pub fn add_messages(&mut self, message: ChatEntry) -> &mut Self {
-        self.messages.push(message);
+    pub fn add_messages(&mut self,thread_id: String,  message: ChatEntry) -> &mut Self {
+        for thread in self.threads.iter_mut() {
+        }
         self
     }
     pub fn set_description(&mut self, description: String) -> &mut Self {
@@ -31,5 +34,4 @@ impl Channel {
         self.name = name;
         self
     }
-    
 }

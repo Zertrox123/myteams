@@ -1,4 +1,5 @@
 use crate::commands::ICommand::Command;
+use crate::log_server;
 use crate::{Client::Client, Server::Server};
 
 pub struct help_cmd {}
