@@ -1,6 +1,9 @@
 pub mod ICommand;
 pub mod join;
 pub mod help;
+pub mod r#use;
+pub mod create;
+
 use std::sync::{OnceLock, Mutex};
 
 use crate::{Client::Client, Server::Server};

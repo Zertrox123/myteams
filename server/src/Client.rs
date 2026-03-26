@@ -1,15 +1,17 @@
-use std::{io::{Read, Write}, net::TcpStream, os::fd::AsRawFd, str::Utf8Error, string::FromUtf8Error};
+use std::{io::{Read, Write}, net::TcpStream, string::FromUtf8Error};
 
+#[derive(Debug)]
 pub struct Client {
     name: String,
-    selected_team: Option<String>,
-    selected_channel: Option<String>,
-    selected_thread: Option<String>,
     socket: TcpStream,
     teams:  Vec<String>, 
     input:  Vec<u8>,
     output: Vec<u8>,
     dead:   bool,
+    pub selected_team: Option<String>,
+    pub selected_channel: Option<String>,
+    pub selected_thread: Option<String>,
+
 }
 
 impl Client {
@@ -56,14 +58,11 @@ impl Client {
         self.output = message.as_bytes().to_vec();
     }
 
-
-
-
     pub fn send_data(&mut self){
         if self.dead {return}
         match self.socket.write(&self.output) {
             Ok(_) => {}
-            Err(e) => {
+            Err(_e) => {
                 self.dead = true;
                 let _ = self.socket.shutdown(std::net::Shutdown::Both);
             }

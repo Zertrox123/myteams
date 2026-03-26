@@ -7,6 +7,7 @@
 
 all:
 	cargo build --release
+	rm -rf  myteams_cli myteams_server
 	mv target/release/myteams_cli    .
 	mv target/release/myteams_server .
 

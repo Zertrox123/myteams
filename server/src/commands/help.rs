@@ -4,7 +4,7 @@ use crate::{Client::Client, Server::Server};
 pub struct help_cmd {}
 
 impl Command for help_cmd {
-    fn execute(&mut self, args: Vec<&str>, server: &mut Server, client: &mut Client) {
+    fn execute(&mut self, _args: Vec<&str>, _server: &mut Server, client: &mut Client) {
         client.add_data(r#"=== HELP ===\n"#.into());
         client.add_data(r#"Command Line Interface (CLI) client
 /help : show help

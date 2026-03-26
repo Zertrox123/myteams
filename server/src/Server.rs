@@ -1,7 +1,7 @@
-use std::{net::{self, TcpListener}, os::linux::net::TcpStreamExt, thread, time::Duration};
+use std::{net::TcpListener, thread, time::Duration};
 use crate::{Client, Teams::Team, commands::execute};
-use crate::utils;
 
+#[derive(Debug)]
 pub struct Server {
     listener: TcpListener,
     clients: Vec<Client::Client>,
@@ -17,6 +17,33 @@ impl Server {
         }
     }
 
+    pub fn as_slice(&self) -> &[u8] {
+        unsafe {
+            core::slice::from_raw_parts(
+                self as *const Self as *const u8,
+                core::mem::size_of::<Self>(),
+            )
+        }
+    }
+
+    fn as_struct(bytes: &[u8]) -> &Self {
+        unsafe { &*(bytes.as_ptr() as *const Self) }
+    }
+
+    pub fn add_team(&mut self, t: Team){
+        self.teams.push(t);
+    }
+
+    pub fn does_team_exist(&self, id: &String) -> Option<Team>
+    {
+        for team in self.teams.iter() {
+            if &team.get_id() == id {
+                return Some(team.clone());
+            }
+        }
+        None
+    }
+
     pub fn run(&mut self) {
         let _ = self.listener.set_nonblocking(true);
 
@@ -30,7 +57,6 @@ impl Server {
                         break;
                     }
                     let stream = stream.unwrap();
-                    stream.set_ttl(1);
                     let _ = stream.set_nonblocking(true);
                     self.clients.push(Client::Client::new(stream));
 
@@ -47,11 +73,15 @@ impl Server {
 
     fn handle_commands(&mut self) {
         for client_id in 0..self.clients.len() {
-            let mut client = self.clients.get_mut(client_id).unwrap();
+            let client = self.clients.get_mut(client_id).unwrap();
             client.recv_data();
+
             match client.get_input() {
                 Ok(cmd) => {
-                    if cmd.len() > 0 {
+                    if cmd == "DUMP\n" {
+                        println!("{:#?}", self);
+                    }
+                    if !cmd.is_empty() {
                         let mut client = self.clients.remove(client_id);
                         execute(cmd, self, &mut client);
                         client.reset_input();
@@ -66,8 +96,8 @@ impl Server {
 
         for client_index in 0..self.clients.len() {
             if let Some(client) = self.clients.get_mut(client_index) && client.is_dead(){
-                    self.clients.remove(client_index);
-                    self.clients.retain(|c| c.is_dead());
+                self.clients.remove(client_index);
+                self.clients.retain(|c| c.is_dead());
             }
         }
     }
