@@ -1,5 +1,7 @@
 use std::{io::{Read, Write}, net::TcpStream, string::FromUtf8Error};
 
+use crate::utils;
+
 #[derive(Debug)]
 pub struct Client {
     name: String,
@@ -8,6 +10,7 @@ pub struct Client {
     input:  Vec<u8>,
     output: Vec<u8>,
     dead:   bool,
+    pub id: String,
     pub selected_team: Option<String>,
     pub selected_channel: Option<String>,
     pub selected_thread: Option<String>,
@@ -22,6 +25,7 @@ impl Client {
                 selected_channel: None,
                 selected_thread: None,
                 socket: stream,
+                id: utils::generate_uuid(),
                 teams: Vec::new(),
                 input: Vec::new(),
                 output: Vec::new(),

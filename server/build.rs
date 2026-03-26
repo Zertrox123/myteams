@@ -1,6 +1,10 @@
 fn main() {
-    let lib_dir = "/home/poulpy/epitech/G-NWP-400-LYN-4-1-myteams-5/server/libs";
+    let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap();
+    let lib_dir = format!("{manifest_dir}/libs");
+
     println!("cargo:rustc-link-lib=dylib=myteams");
     println!("cargo:rustc-link-search=native={lib_dir}");
-    println!("cargo:rustc-link-arg=-Wl,-rpath,{lib_dir}");
+    // $ORIGIN = directory of the binary at runtime
+    println!("cargo:rustc-link-arg=-Wl,-rpath,$ORIGIN/libs");
+    println!("cargo:rustc-link-arg=-Wl,-rpath,{lib_dir}"); // fallback for `cargo run`
 }
