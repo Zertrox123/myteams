@@ -1,10 +1,10 @@
 pub mod ICommand;
-pub mod join;
-pub mod help;
-pub mod r#use;
 pub mod create;
+pub mod help;
+pub mod join;
+pub mod r#use;
 
-use std::sync::{OnceLock, Mutex};
+use std::sync::{Mutex, OnceLock};
 
 use crate::{Client::Client, Server::Server};
 
@@ -18,7 +18,7 @@ pub fn register_command(cmd: Box<dyn ICommand::Command + Send>) {
         .push(cmd);
 }
 
-pub fn execute(mut cmd: String, server: &mut Server, client: &mut Client){
+pub fn execute(mut cmd: String, server: &mut Server, client: &mut Client) {
     cmd.pop();
     let mut args: Vec<&str> = cmd.split(' ').collect();
     let command = args.remove(0);

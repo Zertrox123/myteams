@@ -12,13 +12,13 @@ pub struct ChatEntry {
 
 impl ChatEntry {
     pub fn new() -> ChatEntry {
-        ChatEntry { id: utils::generate_uuid(),
-                    auth_name: String::new(),
-                    content: String::new(),
-                    reply_id: None,
-                    emoji: None,
-                    timestamp: String::new(),
+        ChatEntry {
+            id: utils::generate_uuid(),
+            auth_name: String::new(),
+            content: String::new(),
+            reply_id: None,
+            emoji: None,
+            timestamp: String::new(),
         }
     }
-    
 }
