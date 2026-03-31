@@ -20,8 +20,8 @@ fn main() {
     utils::get_fd_list();
     let mut srv = Server::Server::new("0.0.0.0:1337");
 
-    log_server::event_user_loaded("%p", "test");
 
-    println!("{:#?}", srv.as_slice());
+    srv.load();
+    //println!("{:#?}", srv.as_slice());
     srv.run();
 }

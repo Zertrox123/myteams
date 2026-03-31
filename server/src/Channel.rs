@@ -1,13 +1,35 @@
 use std::collections::HashMap;
-
 use crate::{ChatEntry::ChatEntry, utils};
+
+#[derive(Debug, Clone)]
+pub struct Threads {
+    pub id: String,
+    pub name: String,
+    pub message: String,
+    pub reply: Vec<ChatEntry>
+}
+
+impl Threads {
+    pub fn to_string(&self) -> String {
+        format!("{}\n{}\n{}", self.id, self.name, self.message)
+    }
+
+    pub fn from_string(info: Vec<&str>) -> Result<Self, String> {
+        Ok(Self { id: info.get(0).unwrap().to_string(),
+               name: info.get(1).unwrap().to_string(),
+               message: info.get(2).unwrap().to_string(),
+               reply: Vec::new(),
+        })
+    }
+}
+
 
 #[derive(Debug, Clone)]
 pub struct Channel {
     pub id: String,
     pub name: String,
     pub description: String,
-    pub threads: Vec<HashMap<String, Vec<ChatEntry>>>
+    pub threads: Vec<Threads>
 }
 
 impl Channel {
@@ -25,13 +47,25 @@ impl Channel {
         }
         self
     }
-    pub fn set_description(&mut self, description: String) -> &mut Self {
+    pub fn set_description(&mut self, description: String) -> Self {
         self.description = description;
-        self
+        self.clone()
     }
 
-    pub fn set_name(&mut self, name: String) -> &mut Self {
+    pub fn set_name(&mut self, name: String) -> Self {
         self.name = name;
-        self
+        self.clone()
+    }
+    
+    pub fn to_string(&self) -> String {
+        format!("{}\n{}\n{}", self.id, self.name, self.description)
+    }
+
+    pub fn from_string(info: Vec<&str>) -> Result<Self, String> {
+        Ok(Self { id: info.get(0).unwrap().to_string(),
+               name: info.get(1).unwrap().to_string(),
+               description: info.get(2).unwrap().to_string(),
+               threads: Vec::new(),
+        })
     }
 }
