@@ -1,5 +1,5 @@
-use std::{fs, net::TcpListener, thread, time::Duration};
 use crate::{Channel, Client, Teams::Team, commands::execute};
+use std::{fs, net::TcpListener, thread, time::Duration};
 
 #[derive(Debug)]
 pub struct Server {
@@ -9,11 +9,11 @@ pub struct Server {
 }
 
 impl Server {
-    pub fn new(addr: &str) -> Server{
-        Server { 
+    pub fn new(addr: &str) -> Server {
+        Server {
             listener: TcpListener::bind(addr).unwrap(),
             clients: Vec::new(),
-            teams: Vec::new()
+            teams: Vec::new(),
         }
     }
 
@@ -27,34 +27,47 @@ impl Server {
     }
 
     pub fn load(&mut self) {
-    let base_path = "data";
-    let server_str = fs::read_to_string(format!("{}/metadata", base_path)).unwrap();
+        let base_path = "data";
+        let server_str = fs::read_to_string(format!("{}/metadata", base_path)).unwrap();
 
-    for team_entry in fs::read_dir(base_path).unwrap() {
-        let team_path = team_entry.unwrap().path();
-        if !team_path.is_dir() { continue; }
-        let team_str = fs::read_to_string(format!("{}/metadata", team_path.display())).unwrap();
-        let mut team = Team::from_string(team_str.lines().collect::<Vec<&str>>()).unwrap();
+        for team_entry in fs::read_dir(base_path).unwrap() {
+            let team_path = team_entry.unwrap().path();
+            if !team_path.is_dir() {
+                continue;
+            }
+            let team_str = fs::read_to_string(format!("{}/metadata", team_path.display())).unwrap();
+            let mut team = Team::from_string(team_str.lines().collect::<Vec<&str>>()).unwrap();
 
-        for channel_entry in fs::read_dir(&team_path).unwrap() {
-            let channel_path = channel_entry.unwrap().path();
-            if !channel_path.is_dir() { continue; }
-            let channel_str = fs::read_to_string(format!("{}/metadata", channel_path.display())).unwrap();
-            let mut channel = Channel::Channel::from_string(channel_str.lines().collect::<Vec<&str>>()).unwrap();
+            for channel_entry in fs::read_dir(&team_path).unwrap() {
+                let channel_path = channel_entry.unwrap().path();
+                if !channel_path.is_dir() {
+                    continue;
+                }
+                let channel_str =
+                    fs::read_to_string(format!("{}/metadata", channel_path.display())).unwrap();
+                let mut channel =
+                    Channel::Channel::from_string(channel_str.lines().collect::<Vec<&str>>())
+                        .unwrap();
 
-            for thread_entry in fs::read_dir(&channel_path).unwrap() {
-                let thread_path = thread_entry.unwrap().path();
-                if !thread_path.is_dir() { continue; }
-                let thread_str = fs::read_to_string(format!("{}/metadata", thread_path.display())).unwrap();
-                channel.threads.push(Channel::Threads::from_string(thread_str.lines().collect::<Vec<&str>>()).unwrap());
+                for thread_entry in fs::read_dir(&channel_path).unwrap() {
+                    let thread_path = thread_entry.unwrap().path();
+                    if !thread_path.is_dir() {
+                        continue;
+                    }
+                    let thread_str =
+                        fs::read_to_string(format!("{}/metadata", thread_path.display())).unwrap();
+                    channel.threads.push(
+                        Channel::Threads::from_string(thread_str.lines().collect::<Vec<&str>>())
+                            .unwrap(),
+                    );
+                }
+
+                team.channels.push(channel);
             }
 
-            team.channels.push(channel);
+            self.teams.push(team);
         }
-
-        self.teams.push(team);
     }
-}
     pub fn save(&mut self) {
         let base_path = "data";
         let metadata_path = format!("{}/metadata", base_path);
@@ -92,12 +105,11 @@ impl Server {
         unsafe { &*(bytes.as_ptr() as *const Self) }
     }
 
-    pub fn add_team(&mut self, t: Team){
+    pub fn add_team(&mut self, t: Team) {
         self.teams.push(t);
     }
 
-    pub fn does_team_exist(&self, id: &String) -> Option<Team>
-    {
+    pub fn does_team_exist(&self, id: &String) -> Option<Team> {
         for team in self.teams.iter() {
             if &team.get_id() == id {
                 return Some(team.clone());
@@ -110,7 +122,6 @@ impl Server {
         let _ = self.listener.set_nonblocking(true);
 
         loop {
-
             //if self.clients.len() > 1 {
             if true {
                 for stream in self.listener.incoming() {
@@ -123,7 +134,7 @@ impl Server {
                     self.clients.push(Client::Client::new(stream));
 
                     println!("Connection established!");
-                } 
+                }
             }
 
             for client in &mut self.clients {

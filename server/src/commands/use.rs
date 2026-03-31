@@ -2,11 +2,9 @@ use crate::Teams::Team;
 use crate::commands::ICommand::Command;
 use crate::{Client::Client, Server::Server};
 
-pub struct use_cmd{}
+pub struct use_cmd {}
 
-impl use_cmd {
-    
-}
+impl use_cmd {}
 
 impl Command for use_cmd {
     fn execute(&mut self, args: Vec<&str>, server: &mut Server, client: &mut Client) {
@@ -24,7 +22,7 @@ impl Command for use_cmd {
         }
     }
 
-    fn get_cmd(&self) -> String{
+    fn get_cmd(&self) -> String {
         "/use".into()
     }
 }

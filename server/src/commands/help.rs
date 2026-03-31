@@ -25,10 +25,9 @@ impl Command for help_cmd {
 /info : based on the context, display details of the current resource (see below)
 "#.into());
         client.send_data();
-
     }
 
-    fn get_cmd(&self) -> String{
+    fn get_cmd(&self) -> String {
         "/help".into()
     }
 }

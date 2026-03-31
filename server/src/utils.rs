@@ -8,13 +8,14 @@ fn get_rdm_string(size: usize) -> String {
     let _ = data.read_exact(&mut buf);
 
     for i in buf {
-        final_vec.push(48 + ( i % 10 ));
+        final_vec.push(48 + (i % 10));
     }
     String::from_utf8(final_vec).unwrap_or_default()
 }
 
 pub fn generate_uuid() -> String {
-    format!("{}-{}-{}-{}", 
+    format!(
+        "{}-{}-{}-{}",
         get_rdm_string(10),
         get_rdm_string(10),
         get_rdm_string(10),
