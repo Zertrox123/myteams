@@ -8,7 +8,7 @@ use crate::utils;
 
 #[derive(Debug)]
 pub struct Client {
-    name: String,
+    pub name: String,
     socket: TcpStream,
     teams: Vec<String>,
     input: Vec<u8>,
@@ -64,7 +64,10 @@ impl Client {
     }
 
     pub fn add_data(&mut self, message: String) {
-        self.output = message.as_bytes().to_vec();
+        self.output.append(&mut message.as_bytes().to_vec());
+    }
+    pub fn unsubscribe_from_team(&mut self, team: &str) {
+        self.teams.retain(|t| t != team);
     }
 
     pub fn send_data(&mut self) {
@@ -83,5 +86,13 @@ impl Client {
 
     pub fn set_dead(&mut self) {
         self.dead = true;
+    }
+    
+    pub fn get_subscribed_teams(&self) -> Vec<String> {
+        self.teams.clone()
+    }
+
+    pub fn subscribe_to_team(&mut self, team: &str) {
+        self.teams.push(team.to_string());
     }
 }

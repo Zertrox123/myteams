@@ -1,11 +1,11 @@
-use crate::{Channel, Client, Teams::Team, commands::execute};
+use crate::{Channel, Client, Teams::Team, commands::execute, utils};
 use std::{fs, net::TcpListener, thread, time::Duration};
 
 #[derive(Debug)]
 pub struct Server {
     listener: TcpListener,
-    clients: Vec<Client::Client>,
-    teams: Vec<Team>,
+    pub clients: Vec<Client::Client>,
+    pub teams: Vec<Team>,
 }
 
 impl Server {
@@ -17,15 +17,19 @@ impl Server {
         }
     }
 
-    pub fn as_slice(&self) -> &[u8] {
-        unsafe {
-            core::slice::from_raw_parts(
-                self as *const Self as *const u8,
-                core::mem::size_of::<Self>(),
-            )
-        }
-    }
+    pub fn get_subscribed_users(&self, team_id: &str) -> Vec<&Client::Client>{
+        let mut users: Vec<&Client::Client> = Vec::new();
 
+        for user in &self.clients {
+            for id in user.get_subscribed_teams() {
+                if team_id == &id {
+                    let _ = users.push(&user);
+                }
+            }
+        }
+        users
+    }
+ 
     pub fn load(&mut self) {
         let base_path = "data";
         let server_str = fs::read_to_string(format!("{}/metadata", base_path)).unwrap();
@@ -109,7 +113,7 @@ impl Server {
         self.teams.push(t);
     }
 
-    pub fn does_team_exist(&self, id: &String) -> Option<Team> {
+    pub fn does_team_exist(&self, id: &str) -> Option<Team> {
         for team in self.teams.iter() {
             if &team.get_id() == id {
                 return Some(team.clone());
@@ -178,6 +182,33 @@ impl Server {
                 None => {}
             }
         }
+    }
+
+    pub fn add_thread(&mut self, team_id: &str, channel_id: &str, thread_name: String, thread_message: String) -> Result<String, bool> {
+        for mut team in &mut self.teams {
+            if team.get_id() != team_id {
+                continue;
+            }
+            for channel in &mut team.channels {
+                if channel.id == channel_id {
+                    let id = utils::generate_uuid();
+                    channel.add_threads(id.clone(), thread_message, thread_name);
+                    return Ok(id);
+                }
+            }
+        }
+        Err(false)
+    }
+
+    pub fn get_clients(&mut self) -> Vec<Vec<String>> {
+        let mut out: Vec<Vec<String>> = Vec::new();
+        for cl in self.clients.iter().clone() {
+            let mut client: Vec<String> = Vec::new();
+            client.push(cl.id.clone());
+            client.push(cl.name.clone());
+            out.push(client.clone());
+        }
+        out
     }
 
     pub fn to_string(&self) -> String {

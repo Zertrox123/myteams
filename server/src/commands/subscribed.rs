@@ -24,7 +24,7 @@ impl Command for subscribed_cmd {
         }
 
         let mut out = String::from("SUBSCRIPTIONS:\n");
-        for team_id in client.get_subscriptions() {
+        for team_id in client.get_subscribed_teams() {
             out.push_str(format!("{}\n", team_id).as_str());
         }
         client.add_data(out);

@@ -43,7 +43,20 @@ impl Channel {
     }
 
     pub fn add_messages(&mut self, thread_id: String, message: ChatEntry) -> &mut Self {
-        for thread in self.threads.iter_mut() {}
+        for thread in &mut self.threads{
+            if thread.id == thread_id {
+                thread.reply.push(message.clone());
+            }
+        }
+        self
+    }
+
+    pub fn add_threads(&mut self, id: String, message: String, name: String) -> &mut Self {
+        self.threads.push(Threads { id,
+            name,
+            message,
+            reply: Vec::new()
+        });
         self
     }
     pub fn set_description(&mut self, description: String) -> Self {
