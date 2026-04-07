@@ -5,16 +5,35 @@
 ## project makefile
 ##
 
-all:
+CXX = clang++
+CXXFLAGS = -Wall -Werror -Wextra -std=c++20
+SRC = client/src/main.cpp
+OBJ = $(SRC:.cpp=.o)
+NAME = myteams_cli
+SERVER = myteams_server
+
+
+all: server client
+
+server:
 	cargo build --release
-	rm -rf  myteams_cli myteams_server
-	mv target/release/myteams_cli    .
-	mv target/release/myteams_server .
+	rm -f $(SERVER)
+	mv target/release/$(SERVER) .
+
+client: $(OBJ)
+	$(CXX) $(CXXFLAGS) -o $(NAME) $(OBJ)
+
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	rm -rf target
+	rm -f $(OBJ)
+	cargo clean
 
 fclean: clean
-	rm -rf  myteams_cli myteams_server
+	rm -f $(SERVER)
+	rm -f $(NAME)
 
 re: fclean all
+
+.PHONY: all clean fclean re server client
