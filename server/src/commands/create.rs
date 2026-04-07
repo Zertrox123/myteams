@@ -1,6 +1,9 @@
+use std::thread::Thread;
+
+use crate::Channel::Threads;
 use crate::Teams::Team;
 use crate::commands::ICommand::Command;
-use crate::log_server;
+use crate::{log_server, utils};
 use crate::{Client::Client, Server::Server};
 
 pub struct create_cmd {}
@@ -8,8 +11,8 @@ pub struct create_cmd {}
 impl Command for create_cmd {
     fn execute(&mut self, args: Vec<&str>, server: &mut Server, client: &mut Client) {
         if client.selected_team.is_some()
-            || client.selected_thread.is_some()
-            || client.selected_channel.is_some()
+            && client.selected_thread.is_none()
+            && client.selected_channel.is_none()
         {
         } else if args.len() == 2 {
             let team_name = args.get(0).unwrap().to_string();
@@ -26,6 +29,33 @@ impl Command for create_cmd {
             t.set_name(team_name);
             t.set_description(team_description);
             server.add_team(t.clone());
+        }
+        if client.selected_team.is_some()
+            && client.selected_thread.is_none()
+            && client.selected_channel.is_some()
+        {
+        } else if args.len() == 2 {
+            let thread_name = args.get(0).unwrap().to_string();
+            let thread_description = args.get(1).unwrap().to_string();
+
+            let id = server.add_thread(
+                client.selected_team.clone().unwrap().as_str(),
+                client.selected_channel.clone().unwrap().as_str(),
+                thread_name.clone(),
+                thread_description.clone()
+            );
+            match id {
+                Ok(id) => {
+                    log_server::event_thread_created(
+                        client.selected_channel.clone().unwrap().as_str(),
+                        id.as_str(),
+                        client.id.as_str(),
+                        thread_name.as_str(),
+                        thread_description.as_str(),
+                    );
+                }
+                Err(_) => {}
+            }
         }
 
         if client.selected_team.is_none() {

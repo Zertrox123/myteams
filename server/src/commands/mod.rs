@@ -2,7 +2,15 @@ pub mod ICommand;
 pub mod create;
 pub mod help;
 pub mod join;
+pub mod user;
+pub mod login;
+pub mod logout;
+pub mod list;
+pub mod info;
+pub mod users;
 pub mod r#use;
+pub mod subscribe;
+pub mod subscribed;
 
 use std::sync::{Mutex, OnceLock};
 
@@ -19,6 +27,7 @@ pub fn register_command(cmd: Box<dyn ICommand::Command + Send>) {
 }
 
 pub fn execute(mut cmd: String, server: &mut Server, client: &mut Client) {
+    println!("{:#?}", server);
     cmd.pop();
     let mut args: Vec<&str> = cmd.split(' ').collect();
     let command = args.remove(0);
