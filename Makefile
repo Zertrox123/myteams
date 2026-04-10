@@ -6,7 +6,7 @@
 ##
 
 CXX = clang++
-CXXFLAGS = -Wall -Werror -Wextra -std=c++20 -Iclient/includes
+CXXFLAGS = -Wall -Wextra -std=c++20 -Iclient/includes
 SRC = $(wildcard client/src/*.cpp)
 OBJ = $(SRC:.cpp=.o)
 NAME = myteams_cli
