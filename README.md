@@ -1,6 +1,6 @@
 # MyTeams
 
-Plateforme de messagerie collaborative (style Slack / Teams) en C avec architecture client-serveur et protocole binaire TCP.
+Plateforme de messagerie collaborative (style Slack / Teams) en C avec architecture client-serveur et protocole binaire TCP
 
 - Serveur non-bloquant avec `select`
 - Gestion des teams, channels, threads et messages privés
